@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "adm-zip": "^0.5.5",
+    "chalk": "^4.1.1",
+    "fast-json-patch": "^3.0.0-1",
+    "inquirer": "^8.1.0",
+    "ora": "^5.4.0",
+    "rimraf": "^3.0.2",
+    "yaml": "^1.10.2"
+  },
+  "devDependencies": {
+    "pkg": "^5.2.1"
+  },
+  "pkg": {
+    "scripts": ["data_deltas.js","data_tree_sanitizer.js","full_mod.js","gmkr.js","lang_deltas.js","tiled_delta.js"],
+    "targets": ["node14-win-x64", "node14-linux-x64"],
+    "outputPath": "dist"
+  },
+  "bin": "gmkr.js",
+  "name": "gomorimaker",
+  "public": true
+}
