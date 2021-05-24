@@ -733,12 +733,12 @@ module.exports = async function(key, _gpath) {
     // assets (advanced)
     if (existsSync(path.join(process.cwd(), jid, answers.modid, "img"))) {
         let imgDirs = await listDirDirs(path.join(process.cwd(), jid, answers.modid, "img"), "img");
-        imgDirs.map(a => modJson.files.assets.push(a));
+        imgDirs.map(a => modJson.files.assets.push(a.replace("\\", "/") + "/"));
     }
 
     if (existsSync(path.join(process.cwd(), jid, answers.modid, "audio"))) {
         let audioDirs = await listDirDirs(path.join(process.cwd(), jid, answers.modid, "audio"), "audio");
-        audioDirs.map(a => modJson.files.assets.push(a));
+        audioDirs.map(a => modJson.files.assets.push(a.replace("\\", "/") + "/"));
     }
 
     await fs.writeFile(path.join(process.cwd(), jid, answers.modid, "mod.json"), JSON.stringify(modJson, null, 2));
