@@ -717,14 +717,13 @@ module.exports = async function(key, _gpath) {
         }
     };
 
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "plugins")))    modJson.files.plugins.push("plugins/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "text")))       modJson.files.text.push("text/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "data")))       modJson.files.data.push("data/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "data_pluto"))) modJson.files.data_pluto.push("data_pluto/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "maps")))       modJson.files.maps.push("maps/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "text_delta"))) modJson.files.text_delta.push("text_delta/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "data_delta"))) modJson.files.data_delta.push("data_delta/");
-    if (existsSync(path.join(process.cwd(), jid, answers.modid, "maps_delta"))) modJson.files.maps_delta.push("maps_delta/");
+    let folders_basic = ["plugins","text","data","data_pluto","maps","text_delta","data_delta","maps_delta"];
+    for (let folder of folders_basic) {
+        if (existsSync(path.join(process.cwd(), jid, answers.modid, folder))){
+            let list = await listDir(path.join(process.cwd(), jid, answers.modid, folder), folder)
+            list.map(a => modJson.files[folder].push(a.replace(/\\/g, "/")))
+        }
+    }
 
     // assets (basic)
     if (existsSync(path.join(process.cwd(), jid, answers.modid, "fonts")))       modJson.files.assets.push("fonts/");
@@ -733,12 +732,12 @@ module.exports = async function(key, _gpath) {
     // assets (advanced)
     if (existsSync(path.join(process.cwd(), jid, answers.modid, "img"))) {
         let imgDirs = await listDirDirs(path.join(process.cwd(), jid, answers.modid, "img"), "img");
-        imgDirs.map(a => modJson.files.assets.push(a.replace("\\", "/") + "/"));
+        imgDirs.map(a => modJson.files.assets.push(a.replace(/\\/g, "/") + "/"));
     }
 
     if (existsSync(path.join(process.cwd(), jid, answers.modid, "audio"))) {
         let audioDirs = await listDirDirs(path.join(process.cwd(), jid, answers.modid, "audio"), "audio");
-        audioDirs.map(a => modJson.files.assets.push(a.replace("\\", "/") + "/"));
+        audioDirs.map(a => modJson.files.assets.push(a.replace(/\\/g, "/") + "/"));
     }
 
     await fs.writeFile(path.join(process.cwd(), jid, answers.modid, "mod.json"), JSON.stringify(modJson, null, 2));
@@ -748,12 +747,20 @@ module.exports = async function(key, _gpath) {
     if (answers.zip) {
         spinner.text = "Writing zip";
         let modFiles = await listDir(path.join(process.cwd(), jid, answers.modid), answers.modid);
+        let modFolders = await listDirDirs(path.join(process.cwd(), jid, answers.modid), answers.modid);
+    
         let zip = new admzip();
+
+        zip.addFile(`${answers.modid}/`, Buffer.alloc(0), "", 0644);
+        for (let a  of modFolders) {
+            zip.addFile(`${a.replace(/\\/g, "/")}/`, Buffer.alloc(0), "", 0644);
+        }
+
         let done = 0;
         for (let a of modFiles) {
             done++;
             spinner.text = `Writing zip ${done} / ${modFiles.length}`;
-            zip.addFile(a, await fs.readFile(path.join(process.cwd(), jid, a)));
+            zip.addFile(a.replace(/\\/g, "/"), await fs.readFile(path.join(process.cwd(), jid, a)));
         }
 
         zip.writeZip(path.join(process.cwd(), answers.modid + ".zip"));

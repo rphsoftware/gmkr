@@ -69,17 +69,24 @@ function hash(data) {
             ], name: "m", message:"Select mode of operation"
         }
     ]);
-
-    if (m === "Language deltas") {
-        await require('./lang_deltas')(key, p);
-    }
-    if (m === "Data deltas") {
-        await require('./data_deltas')(key, p);
-    }
-    if (m === "Tiled Map deltas") {
-        await require('./tiled_delta')(key, p);
-    }
-    if (m === "Full mod generation") {
-        await require('./full_mod')(key, p);
+    try {
+        if (m === "Language deltas") {
+            await require('./lang_deltas')(key, p);
+        }
+        if (m === "Data deltas") {
+            await require('./data_deltas')(key, p);
+        }
+        if (m === "Tiled Map deltas") {
+            await require('./tiled_delta')(key, p);
+        }
+        if (m === "Full mod generation") {
+            await require('./full_mod')(key, p);
+        }
+    } catch(e) {
+        console.error("An error occured at runtime: " + e);
+    } finally {
+        if (process.platform === "win32") {
+            require('child_process').execSync("pause");
+        }
     }
 })();
