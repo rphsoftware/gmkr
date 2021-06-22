@@ -700,7 +700,7 @@ module.exports = async function(key, _gpath) {
     let modJson = {
         id: answers.modid,
         name: answers.modname,
-        description: answers.description,
+        description: answers.moddescription,
         version: answers.modversion,
         files: {
             plugins: [],
