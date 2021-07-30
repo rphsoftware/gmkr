@@ -497,6 +497,9 @@ module.exports = async function(key, _gpath) {
             let gameFile = await readGameFileSteam(path.join("maps", a.replace(".json", ".AUBREY")), "utf-8");
             let modFile = await fs.readFile(path.join(answers.modfolder, "maps", a), "utf-8");
 
+            gameFile = JSON.parse(gameFile);
+            modFile = JSON.parse(modFile);
+
             let delta = fastjsonpatch.compare(gameFile, modFile);
 
             await fs.writeFile(path.join(process.cwd(), jid, answers.modid, "maps_delta", a + "d"), JSON.stringify(delta, null, 2));
